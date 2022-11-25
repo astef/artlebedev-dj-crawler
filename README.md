@@ -10,4 +10,5 @@ npm run start
  - download runs in parallel (10 files at a time)
  - `list.json` is downloaded first, and then used to gerenate all other links
  - if asset is already present in destination, it's download is skipped
+ - to refresh collection, delete `list.json`
  - tested with node 16

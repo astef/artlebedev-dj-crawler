@@ -18,7 +18,7 @@ jobs:
           node-version: 16
       - name: Build
         run: |
-          npm run ci
+          npm ci
           npm run generate
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4

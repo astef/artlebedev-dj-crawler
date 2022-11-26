@@ -1,10 +1,12 @@
 # How to use
 
 ## Install dependencies
+
 ```
 npm install
 ```
- - tested with node v16.13.2 and npm v8.4.0
+
+- tested with node v16.13.2 and npm v8.4.0
 
 ## Download mp3 files
 
@@ -27,3 +29,5 @@ npm run generate
 
 - page will be in `dist/index.html` will be generated
 - it will use internet site links, not your local links
+
+🌍 **Demo**: https://astef.github.io/artlebedev-dj-crawler

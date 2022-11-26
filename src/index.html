@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <style>
+      body {
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        font-size: smaller;
+        margin: 4px;
+      }
+      table {
+        max-width: 100%;
+        table-layout: fixed;
+        overflow-wrap: break-word;
+        border-collapse: collapse;
+        margin-top: 4px;
+      }
+
+      table td {
+        word-break: break-word;
+        max-width: 400px;
+        padding: 0;
+      }
+
+      audio {
+        filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%);
+        width: 100%;
+        height: 50px;
+      }
+      p {
+        margin: 0;
+      }
+      .player {
+        width: 100%;
+        height: 50px;
+      }
+    </style>
+    <script>
+      let currentEl;
+      let player;
+      let photo;
+      let playlist;
+      let currentid;
+      let header;
+      const playChar = "▶";
+      const pauseChar = "❚❚";
+      let setHeaderButDontPlay = true;
+
+      window.addEventListener("load", () => {
+        player = document.getElementById("pl");
+        photo = document.getElementById("photo");
+        playlist = document.getElementById("playlist");
+        currentid = document.getElementById("currentid");
+        header = document.getElementById("header");
+        player.addEventListener("pause", () => {
+          if (currentEl) {
+            currentEl.textContent = playChar;
+          }
+        });
+        player.addEventListener("play", () => {
+          if (currentEl) {
+            currentEl.textContent = pauseChar;
+          }
+        });
+
+        // simulate select of the last set, but pause
+        const topRow = document.getElementById("tbl").rows[1];
+        const button = topRow.cells[topRow.cells.length - 1].children[0];
+        button.onclick.call(button);
+        setHeaderButDontPlay = false;
+      });
+
+      function play(id, url, el, imgName, playlistText) {
+        // save
+        let needScrollFix =
+          header.offsetHeight + header.offsetTop - window.scrollY > 0;
+        let headerHeightBefore = header.clientHeight;
+
+        // header
+        photo.src = "https://img.artlebedev.ru/dj/photo_new/400x400/" + imgName;
+        playlist.innerHTML = playlistText;
+        currentid.href = "#" + id;
+        currentid.textContent = id;
+        const newSrc = "https://dj.artlebedev.ru/mp3/" + url;
+        if (player.src != newSrc) {
+          // this will pause it
+          player.src = newSrc;
+        }
+
+        // adjust scroll to avoid flickering
+        let headerHeightAfter = header.clientHeight;
+        if (needScrollFix) {
+          window.scrollBy(0, headerHeightAfter - headerHeightBefore);
+        }
+
+        if (setHeaderButDontPlay) {
+          currentEl = el;
+          return;
+        }
+
+        // player
+        if (el === currentEl) {
+          if (player.paused) {
+            player.play();
+          } else {
+            player.pause();
+          }
+        } else {
+          // pause old
+          if (currentEl) {
+            currentEl.textContent = playChar;
+          }
+
+          // switch
+          currentEl = el;
+
+          // play
+          player.play();
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <center>
+      <div id="header" style="display: inline-block; text-align: left">
+        <div>
+          <a id="currentid" href=""></a>
+        </div>
+        <div>
+          <img id="photo" src="" width="400" height="400" />
+        </div>
+        <div>
+          <p id="playlist"></p>
+        </div>
+      </div>
+    </center>
+    <div class="player">
+      <audio controls preload="none" id="pl">
+        <source src="" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+    <div>
+      <table id="tbl" border="1" cellspacing="0" cellpadding="0">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>City</th>
+            <th>Quote</th>
+            <th>Tags</th>
+            <th>Similar</th>
+            <th>Play</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#.}}
+
+          <tr>
+            <td style="word-break: keep-all"><p id="{{id}}">{{id}}</p></td>
+
+            <td>
+              {{#url}} <a href="{{url}}" target="_blank">{{{name}}}</a>{{/url}}
+              {{^url}}{{{name}}}{{/url}} {{#soundcloud_url}}
+              <a href="{{soundcloud_url}}" target="_blank"
+                ><img
+                  src="https://w.soundcloud.com/icon/assets/images/orange_white_32-94fc761.png"
+                  width="16"
+                  height="16"
+                  alt="SoundCloud"
+              /></a>
+              {{/soundcloud_url}}
+            </td>
+            <!-- <img
+                loading="lazy"
+                style="display: none"
+                src="https://img.artlebedev.ru/dj/photo_new/400x400/{{img.name}}"
+              /> -->
+            <td style="word-break: keep-all"><nobr>{{date}}</nobr></td>
+            <td><nobr>{{city}}</nobr></td>
+            <td><i>{{{quote}}}</i></td>
+            <td>{{tags}}</td>
+            <td>
+              {{#similar_ids}} <a href="#{{.}}">{{.}}</a>&nbsp; {{/similar_ids}}
+            </td>
+            <td style="word-break: keep-all; text-align: center">
+              {{#set}}
+              <span
+                style="cursor: pointer"
+                onclick="play('{{id}}', '{{set.url}}', this, '{{img.name}}', '{{playlist_set_text}}');"
+              >
+                ▶
+              </span>
+              {{/set}}
+            </td>
+          </tr>
+
+          {{/.}}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

@@ -41,6 +41,10 @@ const listType = z.array(
 
 export async function getList() {
   const listFilePath = "data/list.json";
+  if (!existsSync("data")) {
+    await fs.mkdir("data");
+  }
+
   if (!existsSync(listFilePath)) {
     const resp = await axios.get(
       "https://www.artlebedev.ru/dj/json/list.html",
